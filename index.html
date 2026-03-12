@@ -1351,6 +1351,14 @@ body {
   font-family: var(--font-mono); font-size: 10px; line-height: 1.8;
   color: var(--text-g);
 }
+.live-ehr-wrapper.collapsed .live-ehr-scroll {
+  display: none !important;
+  flex: 0 !important;
+}
+.live-ehr-wrapper.collapsed {
+  flex: 0 !important;
+  min-height: 0 !important;
+}
 .live-ehr-line { display: block; padding: 1px 0; border-radius: 3px; }
 .live-ehr-line.needle  { color: var(--rose); font-weight: 700; background: rgba(255,69,58,.08); padding: 3px 6px; border-left: 2px solid var(--rose); margin: 2px 0; }
 .live-ehr-line.distract{ color: var(--text-g); opacity: .55; }
@@ -1494,6 +1502,26 @@ body {
 .live-ehr-scroll::-webkit-scrollbar-track { background: transparent; }
 .live-stream-log::-webkit-scrollbar-thumb,
 .live-ehr-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.10); border-radius: 2px; }
+
+/* ── Collapsible live sections ── */
+.live-section-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; user-select: none;
+}
+.live-section-hd:hover .live-toggle-icon { color: var(--sky); }
+.live-toggle-icon {
+  font-size: 11px; color: var(--text-g); transition: transform .25s var(--ease);
+  font-family: var(--font-mono);
+}
+.live-section.collapsed .live-toggle-icon { transform: rotate(-90deg); }
+.live-section.collapsed .live-section-body { display: none; }
+.live-section-body { margin-top: 8px; }
+.live-query-wrap .live-section-hd { margin-bottom: 0; }
+
+.live-ehr-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }
+
+.live-qbody { display: flex; flex-direction: column; gap: 8px; }
+.live-query-wrap.collapsed .live-qbody { display: none !important; }
 </style>
 </head>
 <body>
@@ -1704,7 +1732,7 @@ body {
         <!-- Connection Bar -->
         <div class="live-conn-bar">
           <div class="live-status-dot" id="live-dot"></div>
-          <span class="live-status-txt" id="live-status-txt">Disconnected — Please connect or check health</span>
+          <span class="live-status-txt" id="live-status-txt">Disconnected</span>
           <button class="live-conn-btn" id="live-conn-btn" onclick="liveIntelligence.toggleConnection()">CONNECT</button>
           <button class="live-conn-btn" onclick="liveIntelligence.checkHealth()" style="border-color:var(--violet);color:var(--violet);background:rgba(191,90,242,.10)">HEALTH</button>
         </div>
@@ -1717,37 +1745,57 @@ body {
 
             <!-- Case selector -->
             <div class="live-section">
-              <div class="live-section-title">🗂 Select Case</div>
-              <select class="live-case-sel" id="live-case-sel" onchange="liveIntelligence.onCaseSelect(this.value)">
-                <option value="">— Connect to load cases —</option>
-              </select>
-              <div class="live-case-card" id="live-case-card" style="display:none"></div>
+              <div class="live-section-hd" onclick="toggleLiveSection(this)">
+                <div class="live-section-title" style="margin-bottom:0">🗂 Select Case</div>
+                <span class="live-toggle-icon">▾</span>
+              </div>
+              <div class="live-section-body">
+                <select class="live-case-sel" id="live-case-sel" onchange="liveIntelligence.onCaseSelect(this.value)">
+                  <option value="">— Connect to load cases —</option>
+                </select>
+                <div class="live-case-card" id="live-case-card" style="display:none"></div>
+              </div>
             </div>
 
             <!-- Suggested questions -->
             <div class="live-section" id="live-suggestions-section" style="display:none">
-              <div class="live-section-title">💡 Suggested Questions</div>
-              <div class="live-suggestions" id="live-suggestions"></div>
+              <div class="live-section-hd" onclick="toggleLiveSection(this)">
+                <div class="live-section-title" style="margin-bottom:0">💡 Suggested Questions</div>
+                <span class="live-toggle-icon">▾</span>
+              </div>
+              <div class="live-section-body">
+                <div class="live-suggestions" id="live-suggestions"></div>
+              </div>
             </div>
 
             <!-- Query + mode -->
             <div class="live-query-wrap">
-              <div class="live-section-title" style="margin-bottom:0">✏️ Ask a Question</div>
-              <textarea class="live-query-input" id="live-query-input" placeholder="Type your clinical question here..." rows="3"></textarea>
-              <div class="live-mode-row">
-                <button class="live-mode-btn" id="mode-baseline" onclick="liveIntelligence.setMode('baseline')">BASELINE</button>
-                <button class="live-mode-btn on" id="mode-both" onclick="liveIntelligence.setMode('both')">BOTH</button>
-                <button class="live-mode-btn" id="mode-hybrid" onclick="liveIntelligence.setMode('hybrid')">HYBRID ONLY</button>
-                <button class="live-run-btn" id="live-run-btn" onclick="liveIntelligence.runQuery()" disabled>▶ RUN</button>
+              <div class="live-section-hd" onclick="toggleLiveSection(this)" style="padding:14px 16px 0">
+                <div class="live-section-title" style="margin-bottom:0">✏️ Ask a Question</div>
+                <span class="live-toggle-icon">▾</span>
+              </div>
+              <div class="live-qbody" style="padding:8px 16px 14px">
+                <textarea class="live-query-input" id="live-query-input" placeholder="Type your clinical question here..." rows="3"></textarea>
+                <div class="live-mode-row">
+                  <button class="live-mode-btn" id="mode-baseline" onclick="liveIntelligence.setMode('baseline')">BASELINE</button>
+                  <button class="live-mode-btn on" id="mode-both" onclick="liveIntelligence.setMode('both')">BOTH</button>
+                  <button class="live-mode-btn" id="mode-hybrid" onclick="liveIntelligence.setMode('hybrid')">HYBRID ONLY</button>
+                  <button class="live-run-btn" id="live-run-btn" onclick="liveIntelligence.runQuery()" disabled>▶ RUN</button>
+                </div>
               </div>
             </div>
 
             <!-- EHR preview -->
-            <div class="live-section" style="padding-bottom:6px">
-              <div class="live-section-title">📜 EHR Preview</div>
-            </div>
-            <div class="live-ehr-scroll" id="live-ehr-scroll">
-              <span style="color:var(--text-g);font-size:11px">Select a case to preview EHR</span>
+            <div class="live-ehr-wrapper" id="live-ehr-section">
+              <div class="live-section" style="padding-bottom:6px;border-bottom:none">
+                <div class="live-section-hd" onclick="toggleEHR(this)">
+                  <div class="live-section-title" style="margin-bottom:0">📜 EHR Preview</div>
+                  <span class="live-toggle-icon" id="ehr-toggle-icon">▾</span>
+                </div>
+              </div>
+              <div class="live-ehr-scroll" id="live-ehr-scroll">
+                <span style="color:var(--text-g);font-size:11px">Select a case to preview EHR</span>
+              </div>
             </div>
 
           </div><!-- /left -->
@@ -3872,8 +3920,20 @@ class LiveIntelligence {
 
   // ── Connection ───────────────────────────────────────────────────
   toggleConnection() {
-  if (this.connected) { this.disconnect(); return; }
+    if (this.connected) { this.disconnect(); return; }
     this.connect();
+  }
+
+  disconnect() {
+    if (this.ws) { try { this.ws.close(); } catch(_) {} this.ws = null; }
+    this.connected = false;
+    if (this._pollTimer) { clearInterval(this._pollTimer); this._pollTimer = null; }
+    this._setStatus('', 'Disconnected');
+    const btn = document.getElementById('live-conn-btn');
+    if (btn) { btn.textContent = 'CONNECT'; btn.classList.remove('danger'); }
+    document.getElementById('live-run-btn').disabled = true;
+    document.getElementById('live-case-sel').innerHTML = '<option value="">— Connect to load cases —</option>';
+    toast('Disconnected from backend', 1500);
   }
 
   async checkHealth() {
@@ -3911,6 +3971,7 @@ class LiveIntelligence {
       btn.textContent = 'DISCONNECT';
       btn.classList.add('danger');
       btn.disabled = false;
+      btn.onclick = () => liveIntelligence.disconnect();
       // Only enable RUN once model is confirmed ready
       const modelReady = d.model_loaded || d.status === 'ready' || String(d.status).toLowerCase().includes('ready');
       document.getElementById('live-run-btn').disabled = !modelReady;
@@ -4214,12 +4275,32 @@ class LiveIntelligence {
   }
 
   onTabActivate() {
-    // Called when user switches to this tab
-    if (!this.connected) {
-      const raw = document.getElementById('live-url-input').value.trim();
-      if (raw) this._resolveUrls(raw);
-    }
+    // URL is hardcoded in constructor — nothing to do here
   }
+}
+
+function toggleLiveSection(el) {
+  const section = el.closest('.live-section, .live-query-wrap, .live-ehr-wrapper');
+  if (!section) return;
+  section.classList.toggle('collapsed');
+  const isCollapsed = section.classList.contains('collapsed');
+  const icon = el.querySelector('.live-toggle-icon') || el.closest('.live-section-hd')?.querySelector('.live-toggle-icon');
+  if (icon) icon.style.transform = isCollapsed ? 'rotate(-90deg)' : '';
+  // Direct DOM toggle for EHR scroll which escapes CSS cascade
+  if (section.classList.contains('live-ehr-wrapper') || section.id === 'live-ehr-section') {
+    const scroll = document.getElementById('live-ehr-scroll');
+    if (scroll) scroll.style.display = isCollapsed ? 'none' : '';
+  }
+}
+
+function toggleEHR(el) {
+  const scroll = document.getElementById('live-ehr-scroll');
+  const icon = document.getElementById('ehr-toggle-icon');
+  const wrapper = document.getElementById('live-ehr-section');
+  const isHidden = scroll.style.display === 'none';
+  scroll.style.display = isHidden ? '' : 'none';
+  wrapper.style.flex = isHidden ? '1' : '0 0 auto';
+  icon.style.transform = isHidden ? '' : 'rotate(-90deg)';
 }
 
 const liveIntelligence = new LiveIntelligence();
