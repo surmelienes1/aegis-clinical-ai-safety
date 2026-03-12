@@ -5,7 +5,7 @@
 [![Hasso Plattner Institute](https://img.shields.io/badge/Institution-HPI-red)](#)
 [![Status](https://img.shields.io/badge/Status-Presentation_Ready-success)](#)
 
-> **Live Demo:** [VERCEL LINK]
+> **Live Demo:** [[VERCEL LINK](https://aegis-clinical-ai-safety.vercel.app/)]
 
 ## 📌 Overview
 AEGIS is an interactive, zero-dependency visual intelligence platform designed to evaluate the safety, reasoning, and adversarial robustness of Clinical AI models operating on Electronic Health Records (EHR). 
